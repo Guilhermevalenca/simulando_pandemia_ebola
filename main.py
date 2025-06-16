@@ -106,7 +106,7 @@ class RandomWalkModel:
     def individualTransition(self, line, column):
         individual = self.population[line][column]
 
-        if (individual.state == State.sick):  # Only sick individuals with spread the virus
+        if (individual.state == State.sick or individual.state == State.dead):  # Only sick individuals with spread the virus
             self.computeSocialInteractions(line, column)
         else:
             return
@@ -309,10 +309,10 @@ class RandomWalkModel:
 
 # MAIN PROGRAM
 
-numberOfRuns = 1000 # Number of simulation runs
+numberOfRuns = 10 # Number of simulation runs
 gridSize = 255  # Size of the population grid
 numberOfGenerations = 52  # Number of generations (iterations) per simulation run
-scenario = 1
+scenario = 2
 
 sum = 0
 
@@ -322,6 +322,6 @@ for i in range(numberOfRuns):
     model.simulation(numberOfGenerations, False)
     sum += model.numberOfDeaths()
     if(i == 0):
-        model.printImage(str(i) + "finalresult-" + str(scenario))
+        model.printImage("finalresult-" + str(scenario))
 
 print('cenario:' + str(scenario) + ' Media de mortos: ' + str(sum / numberOfRuns))

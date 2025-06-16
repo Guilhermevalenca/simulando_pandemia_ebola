@@ -1,0 +1,2 @@
+cenario:1 Media de mortos: 8766.771
+cenario:2 Media de mortos: 6015.2
