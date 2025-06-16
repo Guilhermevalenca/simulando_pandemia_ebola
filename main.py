@@ -48,6 +48,7 @@ class RandomWalkModel:
     """
 
     def __init__(self, populationMatrixSize, scenario):
+        self.scenario = scenario
         self.population = []  # Current state of the population grid
         self.nextPopulation = []  # Next state of the population grid after interactions
         self.currentGeneration = 0  # Current generation count
@@ -63,6 +64,7 @@ class RandomWalkModel:
                 [0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.00],  # recovered transitions
                 [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00],  # Dead transitions
             ]
+            self.contagionFactor = 0.5
         elif(scenario == 2):
             self.transitionProbabilities = [
                 [0.90, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00],  # Healthy transitions
@@ -73,9 +75,10 @@ class RandomWalkModel:
                 [0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.00],  # recovered transitions
                 [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00],  # Dead transitions
             ]
+            self.contagionFactor = 0.3
 
-        self.contagionFactor = 0.01  # Probability of getting sick after interaction with a sick individual
-        self.socialDistanceEffect = 0.1  # Probability of avoiding contact because of social distancing
+        # self.contagionFactor = 0.5  # Probability of getting sick after interaction with a sick individual
+        self.socialDistanceEffect = 0.0  # Probability of avoiding contact because of social distancing
 
         # Initializes the population matrix with healthy individuals.
         for i in range(populationMatrixSize):
@@ -103,14 +106,10 @@ class RandomWalkModel:
     def individualTransition(self, line, column):
         individual = self.population[line][column]
 
-        if (individual.state == State.dead):  # Skips transitions for dead individuals
-            return
-
-        if (individual.state == State.recovered):  # Skips transitions for recovered individuals
-            return
-
         if (individual.state == State.sick):  # Only sick individuals with spread the virus
             self.computeSocialInteractions(line, column)
+        else:
+            return
 
         # TODO: Determines the next state using probabilities for the current state
         probabilities = self.transitionProbabilities[individual.state.value]
@@ -253,7 +252,7 @@ class RandomWalkModel:
             # self.logPopulation(self.population)
             self.logReport(verbose)
             if(i < 5):
-                model.printImage(str(i) + "generations")
+                model.printImage(str(i) + "generations-" + str(self.scenario))
         # if (i == generations):
         # model.printImage(i)
 
@@ -310,15 +309,19 @@ class RandomWalkModel:
 
 # MAIN PROGRAM
 
-numberOfRuns = 10 # Number of simulation runs
+numberOfRuns = 1000 # Number of simulation runs
 gridSize = 255  # Size of the population grid
 numberOfGenerations = 52  # Number of generations (iterations) per simulation run
-scenario = 2
+scenario = 1
+
+sum = 0
 
 # Run the simulation multiple times and print the number of deaths after each run
 for i in range(numberOfRuns):
     model = RandomWalkModel(gridSize, scenario)
     model.simulation(numberOfGenerations, False)
-    print(model.numberOfDeaths())
+    sum += model.numberOfDeaths()
     if(i == 0):
-        model.printImage(str(i) + "finalresult")
+        model.printImage(str(i) + "finalresult-" + str(scenario))
+
+print('cenario:' + str(scenario) + ' Media de mortos: ' + str(sum / numberOfRuns))
