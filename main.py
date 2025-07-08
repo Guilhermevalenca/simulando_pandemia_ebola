@@ -67,7 +67,7 @@ class RandomWalkModel:
             self.contagionFactor = 0.5
         elif(scenario == 2):
             self.transitionProbabilities = [
-                [0.90, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00],  # Healthy transitions
+                [0.95, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00],  # Healthy transitions
                 [0.00, 0.80, 0.20, 0.00, 0.00, 0.00, 0.00],  # Exposed transitions
                 [0.00, 0.00, 0.40, 0.60, 0.00, 0.00, 0.00],  # Infected transitions
                 [0.00, 0.00, 0.00, 0.02, 0.98, 0.00, 0.00],  # Incubation transitions
@@ -251,8 +251,16 @@ class RandomWalkModel:
             self.nextGeneration()
             # self.logPopulation(self.population)
             self.logReport(verbose)
-            if(i < 5):
-                model.printImage(str(i) + "generations-" + str(self.scenario))
+            if (i < 5):
+                name = 'semana: ' + str(i + 1) + ' mortos: ' + str(self.numberOfDeaths()) + ' cenario:' + str(self.scenario)
+                print(name)
+                self.printImage(name)
+            if (i == 23):
+                name = 'semana: ' + str(i + 1) + ' mortos: ' + str(self.numberOfDeaths()) + ' cenario:' + str(self.scenario)
+                print(name)
+                self.printImage(name)
+            # if(i < 5):
+            #     model.printImage(str(i) + "generations-" + str(self.scenario))
         # if (i == generations):
         # model.printImage(i)
 
@@ -309,19 +317,23 @@ class RandomWalkModel:
 
 # MAIN PROGRAM
 
-numberOfRuns = 10 # Number of simulation runs
+numberOfRuns = 1 # Number of simulation runs
 gridSize = 255  # Size of the population grid
 numberOfGenerations = 52  # Number of generations (iterations) per simulation run
 scenario = 2
 
 sum = 0
+numberOfDeaths = 0
 
 # Run the simulation multiple times and print the number of deaths after each run
 for i in range(numberOfRuns):
     model = RandomWalkModel(gridSize, scenario)
     model.simulation(numberOfGenerations, False)
-    sum += model.numberOfDeaths()
-    if(i == 0):
-        model.printImage("finalresult-" + str(scenario))
+    numberOfDeaths = model.numberOfDeaths()
+    sum += numberOfDeaths
 
+
+    # if(i == 0):
+    #     model.printImage("finalresult-" + str(scenario))
+print('ultima semana mortos: ' + str(numberOfDeaths))
 print('cenario:' + str(scenario) + ' Media de mortos: ' + str(sum / numberOfRuns))
